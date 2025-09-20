@@ -7,6 +7,8 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     filename: "bundle.js",
     publicPath: '/',
+	
+	clean:true,
   },
   module: {
     rules: [
@@ -18,6 +20,18 @@ module.exports = {
       {
         test: /\.glsl$/,
         loader: 'webpack-glsl-loader'
+      },
+{
+        test: /\.(png|jpe?g|gif|svg)$/i,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[path][name].[ext]',
+              outputPath: 'textures/',
+            },
+          },
+        ],
       },
     ]
   },
