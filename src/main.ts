@@ -16,11 +16,36 @@ import backgroundTex from './textures/bg_space_seamless.png';
 // This will be referred to by dat.GUI's functions that add GUI elements.
 const controls = {
   tesselations: 5,
-  'Load Scene': loadScene, // A function pointer, essentially
-  colorR: 1,
-  colorG: 0,
-  colorB: 0
+  NoiseFrequency: 0.2,
+  NoiseAmp: 0.6,
+  NoiseAnimX: 0.25,
+  NoiseAnimY: 1.25,
+  NoiseAnimZ: 0.25
 };
+
+let NoiseFreqUnif: WebGLUniformLocation;
+let NoiseAmpUnif: WebGLUniformLocation;
+let NoiseAnimUnif: WebGLUniformLocation;
+
+function initSimParams(fireballShader:ShaderProgram, gl:WebGL2RenderingContext)
+{
+  NoiseFreqUnif = gl.getUniformLocation(fireballShader.prog, "u_NoiseFreq");
+  NoiseAmpUnif = gl.getUniformLocation(fireballShader.prog, "u_NoiseAmp");
+  NoiseAnimUnif = gl.getUniformLocation(fireballShader.prog, "u_NoiseAnim");
+}
+
+function updateSimParams(freq:number, amp:number, anim:vec3, fireballShader:ShaderProgram, gl:WebGL2RenderingContext)
+{
+  fireballShader.use();
+  if (NoiseFreqUnif !== -1)
+    gl.uniform1f(NoiseFreqUnif, freq);
+
+  if (NoiseAmpUnif !== -1)
+    gl.uniform1f(NoiseAmpUnif, amp);
+
+  if (NoiseAnimUnif !== -1)
+    gl.uniform3f(NoiseAnimUnif, anim[0], anim[1], anim[2]);
+}
 
 let icosphere: Icosphere;
 let square: Square;
@@ -54,11 +79,13 @@ function main() {
 
   // Add controls to the gui
   const gui = new DAT.GUI();
+  const NOISE_ANIM_MAX = 5.0;
   gui.add(controls, 'tesselations', 0, 8).step(1);
-  gui.add(controls, 'Load Scene');
-  gui.add(controls, 'colorR', 0, 1).step(0.1);
-  gui.add(controls, 'colorG', 0, 1).step(0.1);
-  gui.add(controls, 'colorB', 0, 1).step(0.1);
+  gui.add(controls, 'NoiseFrequency', 0, 1).step(0.1);
+  gui.add(controls, 'NoiseAmp', 0, 1).step(0.1);
+  gui.add(controls, 'NoiseAnimX', -NOISE_ANIM_MAX, NOISE_ANIM_MAX).step(0.1);
+  gui.add(controls, 'NoiseAnimY', -NOISE_ANIM_MAX, NOISE_ANIM_MAX).step(0.1);
+  gui.add(controls, 'NoiseAnimZ', -NOISE_ANIM_MAX, NOISE_ANIM_MAX).step(0.1);
 
   // get canvas and webgl context
   const canvas = <HTMLCanvasElement> document.getElementById('canvas');
@@ -98,6 +125,8 @@ function main() {
   gl.activeTexture(gl.TEXTURE1);
   gl.bindTexture(gl.TEXTURE_2D, bgTexture);
 
+  initSimParams(fireballShader, gl);
+
   // This function will be called every frame
   function tick() {
     camera.update();
@@ -112,10 +141,17 @@ function main() {
     }
 
     fireballShader.setTime(getElapsedTime());
+    updateSimParams(
+      controls.NoiseFrequency.valueOf(),
+      controls.NoiseAmp.valueOf(),
+      vec3.fromValues(controls.NoiseAnimX.valueOf(), controls.NoiseAnimY.valueOf(), controls.NoiseAnimZ.valueOf()),
+      fireballShader,
+      gl
+    );
     
     gl.depthFunc(gl.ALWAYS); // for simplicity, just always draw the background and the fireball..
-    renderer.render(camera, bgShader, [square], vec4.fromValues(0,0,0,0));
-    renderer.render(camera, fireballShader, [icosphere], vec4.fromValues(controls.colorR, controls.colorG, controls.colorB, 1));
+    renderer.render(camera, bgShader, [square]);
+    renderer.render(camera, fireballShader, [icosphere]);
     
     stats.end();
 

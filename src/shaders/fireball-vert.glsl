@@ -5,6 +5,12 @@ uniform mat4 u_ModelInvTr;
 uniform mat4 u_ViewProj;
 
 uniform float u_Time;       // Time variable modified over time by TS
+
+// Simulation Controls
+uniform float u_NoiseFreq;
+uniform float u_NoiseAmp;
+uniform vec3 u_NoiseAnim;
+
 uniform sampler2D u_noiseTexture;
 
 in vec4 vs_Pos;             // The array of vertex positions passed to the shader
@@ -19,6 +25,7 @@ out vec4 fs_Col;            // The color of each vertex. This is implicitly pass
 const float _NoiseFreq = 0.35;
 const float _NoiseAmp = 0.6;
 const vec3 _NoiseAnim = vec3(0.25, 1.25, 0.25);
+
 
 /// NOTE: noise and fbm from: https://www.shadertoy.com/view/4ssGzn
 float noise( in vec3 x )
@@ -59,11 +66,10 @@ void main()
 
 
     fs_Pos = vs_Pos;
-    float displacement = fbm(fs_Pos.xyz*_NoiseFreq + _NoiseAnim*u_Time) * _NoiseAmp;
+    float displacement = fbm(fs_Pos.xyz*u_NoiseFreq + u_NoiseAnim*u_Time) * u_NoiseAmp;
     fs_Pos.xyz += fs_Nor.xyz * displacement;
+    
     vec4 modelposition = u_Model * fs_Pos;   // Temporarily store the transformed vertex positions for use below
-
-    vec4 transformed = u_ViewProj * modelposition;
-    gl_Position = transformed;// gl_Position is a built-in variable of OpenGL which is
+    gl_Position = u_ViewProj * modelposition;// gl_Position is a built-in variable of OpenGL which is
                                              // used to render the final positions of the geometry's vertices
 }
