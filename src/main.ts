@@ -16,7 +16,7 @@ import backgroundTex from './textures/bg_space_seamless.png';
 // This will be referred to by dat.GUI's functions that add GUI elements.
 const controls = {
   tesselations: 5,
-  NoiseFrequency: 0.2,
+  NoiseFrequency: 0.35,
   NoiseAmp: 0.6,
   NoiseAnimX: 0.25,
   NoiseAnimY: 1.25,
@@ -79,13 +79,13 @@ function main() {
 
   // Add controls to the gui
   const gui = new DAT.GUI();
-  const NOISE_ANIM_MAX = 5.0;
+  const NOISE_ANIM_MAX = 2.0;
   gui.add(controls, 'tesselations', 0, 8).step(1);
-  gui.add(controls, 'NoiseFrequency', 0, 1).step(0.1);
-  gui.add(controls, 'NoiseAmp', 0, 1).step(0.1);
-  gui.add(controls, 'NoiseAnimX', -NOISE_ANIM_MAX, NOISE_ANIM_MAX).step(0.1);
-  gui.add(controls, 'NoiseAnimY', -NOISE_ANIM_MAX, NOISE_ANIM_MAX).step(0.1);
-  gui.add(controls, 'NoiseAnimZ', -NOISE_ANIM_MAX, NOISE_ANIM_MAX).step(0.1);
+  gui.add(controls, 'NoiseFrequency', 0, 2).step(0.01);
+  gui.add(controls, 'NoiseAmp', 0, 2).step(0.01);
+  gui.add(controls, 'NoiseAnimX', -NOISE_ANIM_MAX, NOISE_ANIM_MAX).step(0.01);
+  gui.add(controls, 'NoiseAnimY', -NOISE_ANIM_MAX, NOISE_ANIM_MAX).step(0.01);
+  gui.add(controls, 'NoiseAnimZ', -NOISE_ANIM_MAX, NOISE_ANIM_MAX).step(0.01);
 
   // get canvas and webgl context
   const canvas = <HTMLCanvasElement> document.getElementById('canvas');
