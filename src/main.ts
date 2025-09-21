@@ -9,6 +9,7 @@ import Camera from './Camera';
 import {setGL} from './globals';
 import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
 import {loadTexture} from './rendering/gl/Texture';
+import testImg from './textures/noise_rgb_256_256.png';
 
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
@@ -41,6 +42,11 @@ function loadScene() {
 }
 
 function main() {
+
+  // Add these debug lines at the start of main()
+  console.log('testImg path:', testImg);
+  console.log('testImg type:', typeof testImg);
+
   // Initial display for framerate
   const stats = Stats();
   stats.setMode(0);
@@ -81,8 +87,7 @@ function main() {
     new Shader(gl.FRAGMENT_SHADER, require('./shaders/fireball-frag.glsl')),
   ]);
 
-  const noiseTexStr = require('./textures/noise_rgb_256_256.png');
-  let noiseTex = loadTexture(gl, './textures/noise_rgb_256_256.png');
+  let noiseTex = loadTexture(gl, testImg);
   gl.activeTexture(gl.TEXTURE0);
   gl.bindTexture(gl.TEXTURE_2D, noiseTex);
 

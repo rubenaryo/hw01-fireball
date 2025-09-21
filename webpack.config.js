@@ -28,7 +28,10 @@ module.exports = {
             loader: 'file-loader',
             options: {
               name: '[path][name].[ext]',
-              outputPath: 'textures/',
+              type: 'asset/resource',
+              generator: {
+                filename: 'textures/[name][ext]' // This will output to textures/ instead of textures/src/textures/
+              }
             },
           },
         ],
