@@ -17,6 +17,7 @@ uniform float u_Time;
 
 // These are the interpolated values out of the rasterizer, so you can't know
 // their specific values without knowing the vertices that contributed to them
+in vec4 fs_Pos;
 in vec4 fs_Nor;
 in vec4 fs_LightVec;
 in vec4 fs_Col;
@@ -24,22 +25,36 @@ in vec4 fs_Col;
 out vec4 out_Col; // This is the final output color that you will see on your
                   // screen for the pixel that is currently being processed.
 
+
+// shade a point based on distance
+// Inspired by: https://www.shadertoy.com/view/4ssGzn
+vec4 shadeByDistance(float d)
+{	
+    if (d >= 0.0 && d < 0.2) return (mix(vec4(3, 3, 3, 1), vec4(1, 1, 0, 1), d / 0.2));
+	if (d >= 0.2 && d < 0.5) return (mix(vec4(1, 1, 0, 1), vec4(1, 0, 0, 1), (d - 0.2) / 0.2));
+    return vec4(1.0, 1.0, 1.0, 1.0);
+}
+
 void main()
 {
-    // Material base color (before shading)
-        vec4 diffuseColor = u_Color;
+    // fs_Pos is already in local space to the sphere
+    vec4 diffuseColor = shadeByDistance(0.25 * length(fs_Pos));
 
-        // Calculate the diffuse term for Lambert shading
-        float diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));
-        // Avoid negative lighting values
-        // diffuseTerm = clamp(diffuseTerm, 0, 1);
+    float d = length(fs_Pos);
+    //diffuseColor = (mix(vec4(1, 1, 0, 1), vec4(1, 0, 0, 1), (d - 0.2) / 0.2));    
+    diffuseColor.a = 1.0;
 
-        float ambientTerm = 0.2;
+    // Calculate the diffuse term for Lambert shading
+    float diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));
+    // Avoid negative lighting values
+    // diffuseTerm = clamp(diffuseTerm, 0, 1);
 
-        float lightIntensity = diffuseTerm + ambientTerm;   //Add a small float value to the color multiplier
+    float ambientTerm = 0.2;
+
+    float lightIntensity = diffuseTerm + ambientTerm;   //Add a small float value to the color multiplier
                                                             //to simulate ambient lighting. This ensures that faces that are not
                                                             //lit by our point light are not completely black.
 
-        // Compute final shaded color
-        out_Col = vec4(diffuseColor.rgb * lightIntensity, diffuseColor.a);
+    // Compute final shaded color
+    out_Col = vec4(diffuseColor.rgb, diffuseColor.a);
 }

@@ -37,6 +37,16 @@ out vec4 fs_Col;            // The color of each vertex. This is implicitly pass
 const vec4 lightPos = vec4(5, 5, 3, 1); //The position of our virtual light, which is used to compute the shading of
                                         //the geometry in the fragment shader.
 
+// TODO: Convert to sliders
+const int _VolumeSteps = 128;
+const float _StepSize = 0.02; 
+const float _Density = 0.2;
+
+const float _SphereRadius = 1.0;
+const float _NoiseFreq = 0.35;
+const float _NoiseAmp = 0.6;
+const vec3 _NoiseAnim = vec3(0.25, 1.25, 0.25);
+
 /// NOTE: noise and fbm from: https://www.shadertoy.com/view/4ssGzn
 float noise( in vec3 x )
 {
@@ -76,10 +86,9 @@ void main()
 
 
     fs_Pos = vs_Pos;
+    float displacement = fbm(fs_Pos.xyz*_NoiseFreq + _NoiseAnim*u_Time) * _NoiseAmp;
+    fs_Pos.xyz += displacement;
     vec4 modelposition = u_Model * fs_Pos;   // Temporarily store the transformed vertex positions for use below
-
-    float displacement = fbm(modelposition.xyz*2.0 + vec3(1.0)*u_Time);
-    modelposition.xyz += vec3(displacement);
 
     fs_LightVec = lightPos - modelposition;  // Compute the direction in which the light source lies
 
