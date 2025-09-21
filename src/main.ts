@@ -9,7 +9,8 @@ import Camera from './Camera';
 import {setGL} from './globals';
 import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
 import {loadTexture} from './rendering/gl/Texture';
-import testImg from './textures/noise_rgb_256_256.png';
+import noiseTex from './textures/noise_rgb_256_256.png';
+import backgroundTex from './textures/bg_space_seamless.png';
 
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
@@ -42,10 +43,6 @@ function loadScene() {
 }
 
 function main() {
-
-  // Add these debug lines at the start of main()
-  console.log('testImg path:', testImg);
-  console.log('testImg type:', typeof testImg);
 
   // Initial display for framerate
   const stats = Stats();
@@ -82,14 +79,24 @@ function main() {
   renderer.setClearColor(0.2, 0.2, 0.2, 1);
   gl.enable(gl.DEPTH_TEST);
 
-  const lambert = new ShaderProgram([
+  const fireballShader = new ShaderProgram([
     new Shader(gl.VERTEX_SHADER, require('./shaders/fireball-vert.glsl')),
     new Shader(gl.FRAGMENT_SHADER, require('./shaders/fireball-frag.glsl')),
   ]);
 
-  let noiseTex = loadTexture(gl, testImg);
+  const bgShader = new ShaderProgram([
+    new Shader(gl.VERTEX_SHADER, require('./shaders/bg-vert.glsl')),
+    new Shader(gl.FRAGMENT_SHADER, require('./shaders/bg-frag.glsl')),
+  ]);
+
+  // Bind noise and background textures
+  let noiseTexture = loadTexture(gl, noiseTex);
   gl.activeTexture(gl.TEXTURE0);
-  gl.bindTexture(gl.TEXTURE_2D, noiseTex);
+  gl.bindTexture(gl.TEXTURE_2D, noiseTexture);
+
+  let bgTexture = loadTexture(gl, backgroundTex, bgShader);
+  gl.activeTexture(gl.TEXTURE1);
+  gl.bindTexture(gl.TEXTURE_2D, bgTexture);
 
   // This function will be called every frame
   function tick() {
@@ -104,13 +111,11 @@ function main() {
        icosphere.create();
     }
 
-    lambert.setTime(getElapsedTime());
-
-    renderer.render(camera, lambert, [
-       icosphere
-      // square,
-      // cube
-    ], vec4.fromValues(controls.colorR, controls.colorG, controls.colorB, 1));
+    fireballShader.setTime(getElapsedTime());
+    
+    renderer.render(camera, bgShader, [square], vec4.fromValues(0,0,0,0));
+    renderer.render(camera, fireballShader, [icosphere], vec4.fromValues(controls.colorR, controls.colorG, controls.colorB, 1));
+    
     stats.end();
 
     // Tell the browser to call `tick` again whenever it renders a new frame

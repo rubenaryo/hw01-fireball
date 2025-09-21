@@ -1,5 +1,7 @@
+import ShaderProgram, {Shader} from './ShaderProgram';
+
 // Function to create and load a texture from an image URL
-export function loadTexture(gl: WebGL2RenderingContext, url: string): WebGLTexture | null {
+export function loadTexture(gl: WebGL2RenderingContext, url: string, shader:ShaderProgram = null): WebGLTexture | null {
     const texture = gl.createTexture();
     if (!texture)
     {
@@ -27,14 +29,22 @@ export function loadTexture(gl: WebGL2RenderingContext, url: string): WebGLTextu
     {
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image);
-        console.log(`Image dimensions: ${image.width}x${image.height}`);
-
-
+        
         // Add texture parameters for non-power-of-2 textures
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+        if (shader)
+        {
+            console.log(`Image dimensions: ${image.width}x${image.height}`);
+            shader.setDimensions(image.width, image.height);
+
+            // hack just for background
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+        }
     };
 
     image.onerror = () => 
