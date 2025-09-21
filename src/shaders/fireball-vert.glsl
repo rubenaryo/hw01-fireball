@@ -63,6 +63,7 @@ void main()
     fs_Pos.xyz += fs_Nor.xyz * displacement;
     vec4 modelposition = u_Model * fs_Pos;   // Temporarily store the transformed vertex positions for use below
 
-    gl_Position = u_ViewProj * modelposition;// gl_Position is a built-in variable of OpenGL which is
+    vec4 transformed = u_ViewProj * modelposition;
+    gl_Position = transformed;// gl_Position is a built-in variable of OpenGL which is
                                              // used to render the final positions of the geometry's vertices
 }

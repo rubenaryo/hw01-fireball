@@ -113,6 +113,7 @@ function main() {
 
     fireballShader.setTime(getElapsedTime());
     
+    gl.depthFunc(gl.ALWAYS); // for simplicity, just always draw the background and the fireball..
     renderer.render(camera, bgShader, [square], vec4.fromValues(0,0,0,0));
     renderer.render(camera, fireballShader, [icosphere], vec4.fromValues(controls.colorR, controls.colorG, controls.colorB, 1));
     
