@@ -11,7 +11,8 @@ uniform float u_NoiseFreq;
 uniform float u_NoiseAmp;
 uniform vec3 u_NoiseAnim;
 
-uniform sampler2D u_noiseTexture;
+uniform sampler2D u_NoiseTexture;
+uniform sampler2D u_BackgroundTexture;
 
 in vec4 vs_Pos;             // The array of vertex positions passed to the shader
 in vec4 vs_Nor;             // The array of vertex normals passed to the shader
@@ -35,7 +36,7 @@ float noise( in vec3 x )
 	f = f*f*(3.0-2.0*f);
 	
 	vec2 uv = (p.xy+vec2(37.0,17.0)*p.z) + f.xy;
-	vec2 rg = texture( u_noiseTexture, (uv+0.5)/256.0 ).yx;
+	vec2 rg = texture( u_NoiseTexture, (uv+0.5)/256.0 ).yx;
 	return mix( rg.x, rg.y, f.z )*2.0-1.0;
 }
 

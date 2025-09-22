@@ -27,6 +27,9 @@ let NoiseFreqUnif: WebGLUniformLocation;
 let NoiseAmpUnif: WebGLUniformLocation;
 let NoiseAnimUnif: WebGLUniformLocation;
 
+let NoiseTextureHandle;
+let BackgroundTextureHandle;
+
 function initSimParams(fireballShader:ShaderProgram, gl:WebGL2RenderingContext)
 {
   NoiseFreqUnif = gl.getUniformLocation(fireballShader.prog, "u_NoiseFreq");
@@ -83,9 +86,9 @@ function main() {
   gui.add(controls, 'tesselations', 0, 8).step(1);
   gui.add(controls, 'NoiseFrequency', 0, 2).step(0.01);
   gui.add(controls, 'NoiseAmp', 0, 2).step(0.01);
-  gui.add(controls, 'NoiseAnimX', -NOISE_ANIM_MAX, NOISE_ANIM_MAX).step(0.01);
-  gui.add(controls, 'NoiseAnimY', -NOISE_ANIM_MAX, NOISE_ANIM_MAX).step(0.01);
-  gui.add(controls, 'NoiseAnimZ', -NOISE_ANIM_MAX, NOISE_ANIM_MAX).step(0.01);
+  gui.add(controls, 'NoiseAnimX', 0.0, NOISE_ANIM_MAX).step(0.01);
+  gui.add(controls, 'NoiseAnimY', 0.0, NOISE_ANIM_MAX).step(0.01);
+  gui.add(controls, 'NoiseAnimZ', 0.0, NOISE_ANIM_MAX).step(0.01);
 
   // get canvas and webgl context
   const canvas = <HTMLCanvasElement> document.getElementById('canvas');
@@ -117,13 +120,28 @@ function main() {
   ]);
 
   // Bind noise and background textures
-  let noiseTexture = loadTexture(gl, noiseTex);
+  NoiseTextureHandle = loadTexture(gl, noiseTex);
+  BackgroundTextureHandle = loadTexture(gl, backgroundTex, bgShader);
+  
+  // Configure both global textures
   gl.activeTexture(gl.TEXTURE0);
-  gl.bindTexture(gl.TEXTURE_2D, noiseTexture);
+  gl.bindTexture(gl.TEXTURE_2D, NoiseTextureHandle);
 
-  let bgTexture = loadTexture(gl, backgroundTex, bgShader);
   gl.activeTexture(gl.TEXTURE1);
-  gl.bindTexture(gl.TEXTURE_2D, bgTexture);
+  gl.bindTexture(gl.TEXTURE_2D, BackgroundTextureHandle);
+
+  function setupShaderTextures(shader:ShaderProgram)
+  {
+    shader.use();
+
+    const noiseLocation = gl.getUniformLocation(shader.prog, 'u_NoiseTexture');
+    const bgLocation = gl.getUniformLocation(shader.prog, 'u_BackgroundTexture');
+
+    if (noiseLocation) gl.uniform1i(noiseLocation, 0);
+    if (bgLocation) gl.uniform1i(bgLocation, 1);
+  }
+  setupShaderTextures(fireballShader);
+  setupShaderTextures(bgShader);
 
   initSimParams(fireballShader, gl);
 
