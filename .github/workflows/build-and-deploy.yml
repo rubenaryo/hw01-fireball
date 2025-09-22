@@ -37,3 +37,9 @@ jobs:
           BRANCH: gh-pages
           FOLDER: dist
           CLEAN: false
+          
+      - name: Debug Build Output
+        run: |
+          ls -la dist/
+          ls -la dist/textures/ || echo "No textures folder"
+          find dist -name "*.png" || echo "No PNG files found"

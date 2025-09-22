@@ -30,7 +30,10 @@ module.exports = {
               name: '[path][name].[ext]',
               type: 'asset/resource',
               generator: {
-                filename: 'textures/[name][ext]' // This will output to textures/ instead of textures/src/textures/
+                filename: 'textures/[name][ext]',
+                publicPath: process.env.NODE_ENV === 'production' 
+                  ? '/hw01-fireball/textures/' 
+                  : '/textures/'
               }
             },
           },
