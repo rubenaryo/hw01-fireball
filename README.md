@@ -1,5 +1,11 @@
-# [Project 1: Noise](https://github.com/CIS-566-Fall-2022/hw01-fireball-base)
+# Magmaball
+Created by: Ruben Young (rubenayr@seas.upenn.edu)
 
+Inspired by [this](https://www.shadertoy.com/view/4ssGzn) raymarched fireball I saw on shadertoy, this simulation of a swirling ball of magma adopts a similar setup using Fractional Brownian Motion combined with a noise function seeded from a 2D texture. 
+
+Simulation parameters for the noise are customizable through sliders in the UI. 
+
+# [Project 1: Noise](https://github.com/CIS-566-Fall-2022/hw01-fireball-base)
 ## Objective
 
 Get comfortable with using WebGL and its shaders to generate an interesting 3D, continuous surface using a multi-octave noise algorithm.
