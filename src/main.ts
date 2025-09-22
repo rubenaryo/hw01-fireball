@@ -27,8 +27,8 @@ let NoiseFreqUnif: WebGLUniformLocation;
 let NoiseAmpUnif: WebGLUniformLocation;
 let NoiseAnimUnif: WebGLUniformLocation;
 
-let NoiseTextureHandle;
-let BackgroundTextureHandle;
+let NoiseTextureHandle: WebGLTexture|null;
+let BackgroundTextureHandle: WebGLTexture|null;
 
 function initSimParams(fireballShader:ShaderProgram, gl:WebGL2RenderingContext)
 {
@@ -130,18 +130,16 @@ function main() {
   gl.activeTexture(gl.TEXTURE1);
   gl.bindTexture(gl.TEXTURE_2D, BackgroundTextureHandle);
 
-  function setupShaderTextures(shader:ShaderProgram)
+  function setupShaderTextures(shader:ShaderProgram, texture:WebGLTexture|null, name:string, slot:number)
   {
     shader.use();
 
-    const noiseLocation = gl.getUniformLocation(shader.prog, 'u_NoiseTexture');
-    const bgLocation = gl.getUniformLocation(shader.prog, 'u_BackgroundTexture');
+    gl.activeTexture(gl.TEXTURE0 + slot);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    const texLocation = gl.getUniformLocation(shader.prog, name);
 
-    if (noiseLocation) gl.uniform1i(noiseLocation, 0);
-    if (bgLocation) gl.uniform1i(bgLocation, 1);
+    if (texLocation) gl.uniform1i(texLocation, slot);
   }
-  setupShaderTextures(fireballShader);
-  setupShaderTextures(bgShader);
 
   initSimParams(fireballShader, gl);
 
@@ -168,7 +166,12 @@ function main() {
     );
     
     gl.depthFunc(gl.ALWAYS); // for simplicity, just always draw the background and the fireball..
+    
+    // For simplicity, just use slot 0 for both textures.
+    setupShaderTextures(bgShader, BackgroundTextureHandle, "u_BackgroundTexture", 0);
     renderer.render(camera, bgShader, [square]);
+    
+    setupShaderTextures(fireballShader, NoiseTextureHandle, "u_NoiseTexture", 0);
     renderer.render(camera, fireballShader, [icosphere]);
     
     stats.end();

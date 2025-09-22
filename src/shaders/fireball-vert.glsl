@@ -12,7 +12,6 @@ uniform float u_NoiseAmp;
 uniform vec3 u_NoiseAnim;
 
 uniform sampler2D u_NoiseTexture;
-uniform sampler2D u_BackgroundTexture;
 
 in vec4 vs_Pos;             // The array of vertex positions passed to the shader
 in vec4 vs_Nor;             // The array of vertex normals passed to the shader

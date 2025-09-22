@@ -2,8 +2,6 @@
 
 precision highp float;
 
-uniform sampler2D u_NoiseTexture;
-uniform sampler2D u_BackgroundTexture;
 uniform float u_Time;
 
 in vec4 fs_Pos;
