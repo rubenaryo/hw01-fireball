@@ -5,6 +5,8 @@ Inspired by [this](https://www.shadertoy.com/view/4ssGzn) raymarched fireball I 
 
 Simulation parameters for the noise are customizable through sliders in the UI. 
 
+[Click here to view the interactive site](https://rubenaryo.github.io/hw01-fireball)
+
 https://github.com/user-attachments/assets/7028e5ce-1387-4d44-84c5-7a164886285b
 
 # [Project 1: Noise](https://github.com/CIS-566-Fall-2022/hw01-fireball-base)
